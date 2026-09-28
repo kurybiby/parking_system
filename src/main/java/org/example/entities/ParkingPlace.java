@@ -1,13 +1,9 @@
 package org.example.entities;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.enums.VehicleType;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -16,6 +12,7 @@ import javax.persistence.Table;
 public class ParkingPlace {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(
@@ -35,7 +32,6 @@ public class ParkingPlace {
             nullable = false
     )
     private Boolean isAvailable;
-
 
 
 }
