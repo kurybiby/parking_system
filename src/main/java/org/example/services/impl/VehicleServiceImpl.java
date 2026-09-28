@@ -16,50 +16,62 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
+
     private final VehicleRepository vehicleRepository;
 
+    @Override
     @Transactional
     public VehicleDto createVehicle(VehicleDto dto) {
-        if (vehicleRepository.existsByLicensePlate(dto.getLicensePlate())) {
+        if (vehicleRepository.existsByLicensePlate(dto.getLicensePlace())) {
             throw new ParkingBusinessException("Vehicle with this license plate already exists");
         }
         Vehicle vehicle = new Vehicle();
-        vehicle.setLicensePlate(dto.getLicensePlate());
+        vehicle.setLicensePlate(dto.getLicensePlace());
         vehicle.setType(dto.getType());
         vehicle = vehicleRepository.save(vehicle);
         return mapToDto(vehicle);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<VehicleDto> getAllVehicles() {
-        return vehicleRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+        return vehicleRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public VehicleDto getVehicleById(Long id) {
         return mapToDto(findById(id));
     }
 
+    @Override
     @Transactional
     public VehicleDto updateVehicle(Long id, VehicleDto dto) {
         Vehicle vehicle = findById(id);
-        vehicle.setLicensePlate(dto.getLicensePlate());
+        vehicle.setLicensePlate(dto.getLicensePlace());
         vehicle.setType(dto.getType());
         return mapToDto(vehicleRepository.save(vehicle));
     }
 
+    @Override
     @Transactional
     public void deleteVehicle(Long id) {
         vehicleRepository.delete(findById(id));
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public Vehicle findById(Long id) {
         return vehicleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
     }
 
     private VehicleDto mapToDto(Vehicle vehicle) {
         VehicleDto dto = new VehicleDto();
         dto.setId(vehicle.getId());
-        dto.setLicensePlate(vehicle.getLicensePlate());
+        dto.setLicensePlace(vehicle.getLicensePlate());
         dto.setType(vehicle.getType());
         return dto;
     }
